@@ -2,6 +2,10 @@
 
 #include <cstdio>
 
+
+Segment::Segment() {
+}
+
 Segment::Segment(Point a, Point b) {
 	p[0] = a;
 	p[1] = b;
@@ -15,7 +19,7 @@ Segment::Segment(int ax, int ay, int bx, int by) {
 }
 
 bool between(float point, float a, float b) {
-	const float EPSILON = 1;
+	const float EPSILON = 0.1;
 	if (a > b) {
 		float t = a;
 		a = b;
@@ -30,8 +34,10 @@ float Segment::length() {
 
 bool Segment::intersect(const Segment &s) {
 	int bottom = (p[0].c[0] - p[1].c[0]) * (s.p[0].c[1] - s.p[1].c[1]) - (p[0].c[1] - p[1].c[1]) * (s.p[0].c[0] - s.p[1].c[0]);
-	if (bottom == 0)
+	if (bottom == 0) {
+		//TODO: deal with parallel lines coliding (and with vertical lines)
 		return false;
+	}
 	int first = (p[0].c[0] * p[1].c[1] - p[0].c[1] * p[1].c[0]);
 	int second = (s.p[0].c[0] * s.p[1].c[1] - s.p[0].c[1] * s.p[1].c[0]);
 	float x = float(first * (s.p[0].c[0] - s.p[1].c[0]) - (p[0].c[0] - p[1].c[0]) * second) / bottom;

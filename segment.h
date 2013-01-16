@@ -7,6 +7,7 @@ class Segment {
 private:
 public:
 	Point p[2];
+	Segment();
 	Segment(Point a, Point b);
 	Segment(int ax, int ay, int bx, int by);
 

@@ -6,6 +6,7 @@
 #include <list>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 
 using namespace std;
@@ -14,12 +15,13 @@ const float SPEED = 600;
 
 SDL_Surface *screen;
 SDL_Surface *agentTex, *targetTex, *backgroundTex;
+Uint8 mx, my;
+bool buttonLeft = false;
+bool running = false;
 
 vector<Segment> segments;
 Point pos;
 list<Point> path;
-
-bool running = false;
 
 void quit() {
 	running = false;
@@ -101,7 +103,7 @@ void generateVertices() {
 	for (int i = 0; i < segments.size(); ++i) {
 		Point dir = segments[i].p[0] - segments[i].p[1];
 		dir.normalize();
-		dir *= 30;
+		dir *= 3;
 		for (int j = 0; j < 2; ++j) {
 			vertices[2*i+j] = segments[i].p[j] + dir;
 			for (int k = 0; k < 2*i; ++k)
@@ -220,8 +222,22 @@ void handleEvent(SDL_Event e) {
 		if (nr == SDLK_ESCAPE)
 			quit();
 	}
-	if (e.type == SDL_MOUSEBUTTONUP)
-		changeTarget(e.button.x, e.button.y);
+	if (e.type == SDL_MOUSEBUTTONUP) {
+		Uint8 nr = e.button.button;
+		if (nr == SDL_BUTTON_RIGHT)
+			changeTarget(e.button.x, e.button.y);
+		else if (nr == SDL_BUTTON_LEFT)
+			buttonLeft = false;
+	}
+	else if (e.type == SDL_MOUSEBUTTONDOWN) {
+		Uint8 nr = e.button.button;
+		if (nr == SDL_BUTTON_LEFT)
+			buttonLeft = true;
+	}
+	else if (e.type == SDL_MOUSEMOTION) {
+		mx = e.motion.x;
+		my = e.motion.y;
+	}
 	else if (e.type == SDL_QUIT)
 		quit();
 }
@@ -237,6 +253,14 @@ SDL_Surface* loadBMP(const char* file) {
 	return tex;
 }
 
+void loadSegments(const char *filename) {
+	ifstream f(filename);
+	Segment s;
+	while (f >> s.p[0].c[0] >> s.p[0].c[1] >> s.p[1].c[0] >> s.p[1].c[1])
+		segments.push_back(s);
+	f.close();
+}
+
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
 	screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
@@ -245,19 +269,11 @@ int main() {
 	targetTex = loadBMP("target.bmp");
 	backgroundTex = loadBMP("background.bmp");
 
-	//segments.push_back(Segment(200, 100, 100, 200));
-	segments.push_back(Segment(100, 100, 200, 100));
-	segments.push_back(Segment(200, 100, 200, 200));
-	segments.push_back(Segment(200, 200, 300, 400));
-	//segments.push_back(Segment(200, 200, 100, 200));
-	//segments.push_back(Segment());
-	segments.push_back(Segment(400, 100, 500, 150));
-	segments.push_back(Segment(500, 250, 500, 400));
+	loadSegments("data/world");
 	generateVertices();
 
 	pos.c[0] = pos.c[1] = 50;
 
-	changeTarget(300, 300);
 	Uint32 ticksLast = SDL_GetTicks();
 	running = true;
 	while (running) {
