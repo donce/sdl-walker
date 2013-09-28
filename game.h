@@ -10,6 +10,7 @@
 #include "enemy.h"
 
 #define WORLD_FILE "data/world"
+#define SAVE_FILE "data/save"
 
 class Game {
 public:
@@ -17,7 +18,11 @@ public:
 	void run();
 	Game();
 private:
+	void startNewGame();
+	bool save();
+	bool load();
 	void stop();
+
 	void changeTarget(Point position);
 	void draw();
 	void handleEvent(SDL_Event e);

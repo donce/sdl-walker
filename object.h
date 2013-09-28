@@ -10,7 +10,7 @@ class Image;
 class Object {
 public:
 	Object(Image *image);
-	void setPosition(float x, float y);
+	void setPosition(Point position);
 	void move(Point direction);
 	Point getPosition();
 	void setImage(Image *image);

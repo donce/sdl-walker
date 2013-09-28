@@ -5,9 +5,8 @@ Object::Object(Image *image) {
 	mainScreen.addObject(this);
 }
 
-void Object::setPosition(float x, float y) {
-	position.c[0] = x;
-	position.c[1] = y;
+void Object::setPosition(Point position) {
+	this->position = position;
 }
 
 void Object::move(Point direction) {

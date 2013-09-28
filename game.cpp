@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <fstream>
+
 const float SPEED = 600;
 
 Game::Game() {
@@ -19,18 +21,52 @@ void Game::init() {
 	enemyImage.loadBMP("enemy.bmp");
 
 	player = new Object(&agentImage);
-	player->setPosition(50, 50);
-	
+}
+
+void Game::startNewGame() {
+	player->setPosition(Point(50, 50));
+
 	for (int i = 100; i <= 300; i += 50) {
 		Enemy *enemy = new Enemy(&enemyImage);
-		enemy->setPosition(i, 50);
+		enemy->setPosition(Point(i, 50));
 		enemies.push_back(enemy);
 	}
 }
 
+bool Game::save() {
+	std::ofstream f(SAVE_FILE, std::ios::binary);
+	if (!f)
+		return 0;
+
+	Point position = player->getPosition();
+	f.write((char*)&position, sizeof(position));
+
+	f.close();
+	return 1;
+}
+
+bool Game::load() {
+	std::ifstream f(SAVE_FILE, std::ios::binary);
+	if (!f)
+		return false;
+
+	Point position;
+	f.read((char*)&position, sizeof(position));
+	player->setPosition(position);
+
+	f.close();
+	return true;
+}
+
+void Game::stop() {
+	running = false;
+	save();
+}
+
 void Game::run() {
+	if (!load())
+		startNewGame();
 	running = true;
-	printf("running\n");
 	Uint32 ticksLast = SDL_GetTicks();
 	running = true;
 	while (running) {
@@ -43,10 +79,6 @@ void Game::run() {
 		ticksLast = ticksNow;
 		draw();
 	}
-}
-
-void Game::stop() {
-	running = false;
 }
 
 void Game::draw() {
