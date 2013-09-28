@@ -49,3 +49,11 @@ Point Point::operator*=(const float f) {
 	for (int i = 0; i < 2; ++i)
 		c[i] *= f;
 }
+
+void Point::save(std::ostream &out) {
+	out.write((char*)this, sizeof(this));
+}
+
+void Point::load(std::istream &in) {
+	in.read((char*)c, sizeof(float)*2);
+}

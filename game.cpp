@@ -21,6 +21,7 @@ void Game::init() {
 	enemyImage.loadBMP("enemy.bmp");
 
 	player = new Object(&agentImage);
+	enemies.clear();
 }
 
 void Game::startNewGame() {
@@ -38,8 +39,11 @@ bool Game::save() {
 	if (!f)
 		return 0;
 
-	Point position = player->getPosition();
-	f.write((char*)&position, sizeof(position));
+	player->save(f);
+	unsigned int number = enemies.size();
+	f.write((char*)&number, sizeof(number));
+	for (unsigned int i = 0; i < number; ++i)
+		enemies[i]->save(f);
 
 	f.close();
 	return 1;
@@ -50,9 +54,14 @@ bool Game::load() {
 	if (!f)
 		return false;
 
-	Point position;
-	f.read((char*)&position, sizeof(position));
-	player->setPosition(position);
+	player->load(f);
+	unsigned int number;
+	f.read((char*)&number, sizeof(number));
+	for (unsigned int i = 0; i < number; ++i) {
+		Enemy *enemy = new Enemy(&enemyImage);
+		enemy->load(f);
+		enemies.push_back(enemy);
+	}
 
 	f.close();
 	return true;

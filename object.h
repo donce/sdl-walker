@@ -15,6 +15,8 @@ public:
 	Point getPosition();
 	void setImage(Image *image);
 	void draw();
+	void save(std::ostream &out);
+	void load(std::istream &in);
 private:
 	Point position;
 	Image *image;

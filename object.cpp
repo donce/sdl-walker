@@ -20,3 +20,11 @@ Point Object::getPosition() {
 void Object::draw() {
 	image->draw(position);
 }
+
+void Object::save(std::ostream &out) {
+	position.save(out);
+}
+
+void Object::load(std::istream &in) {
+	position.load(in);
+}
