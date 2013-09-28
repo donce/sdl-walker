@@ -10,16 +10,22 @@ Game::Game() {
 
 void Game::init() {
 	SDL_Init(SDL_INIT_VIDEO);
-	screen.init();
+	mainScreen.init();
 
 	world.load(WORLD_FILE);
 
-	Image::setScreen(&screen);
-	agent.loadBMP("agent.bmp");
-	target.loadBMP("target.bmp");
+	agentImage.loadBMP("agent.bmp");
+	targetImage.loadBMP("target.bmp");
+	enemyImage.loadBMP("enemy.bmp");
 
-	player.setImage(&agent);
-	player.setPosition(50, 50);
+	player = new Object(&agentImage);
+	player->setPosition(50, 50);
+	
+	for (int i = 100; i <= 300; i += 50) {
+		Enemy *enemy = new Enemy(&enemyImage);
+		enemy->setPosition(i, 50);
+		enemies.push_back(enemy);
+	}
 }
 
 void Game::run() {
@@ -44,23 +50,25 @@ void Game::stop() {
 }
 
 void Game::draw() {
-	screen.drawBackground();
+	mainScreen.drawBackground();
 	std::vector<Segment> segments = world.getSegments();
 	for (int i = 0; i < segments.size(); ++i)
-		screen.draw(segments[i]);
+		mainScreen.draw(segments[i]);
 	if (!path.empty())
-		target.draw(path.back());
-	player.draw();//TODO: make automatic (with static collector)?
-	screen.update();
+		targetImage.draw(path.back());
+	
+	mainScreen.draw();
+
+	mainScreen.update();
 }
 
 void Game::changeTarget(Point position) {
-	path = world.findPath(player.getPosition(), position);
+	path = world.findPath(player->getPosition(), position);
 }
 
 void Game::update(Uint32 ticks) {
 	float left = SPEED * ticks / 1000;
-	Point pos = player.getPosition();
+	Point pos = player->getPosition();
 	while (!path.empty() && left > 0) {
 		Point dir = path.front() - pos;
 		if (dir.length() > left) {
@@ -72,7 +80,7 @@ void Game::update(Uint32 ticks) {
 			path.pop_front();
 			left -= dir.length();
 		}
-		player.move(dir);
+		player->move(dir);
 	}
 }
 

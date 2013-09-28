@@ -2,10 +2,16 @@
 
 #include <algorithm>
 
+Screen mainScreen;
+
 void Screen::init() {
 	surface = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
 	background = new Image();
 	background->loadBMP("background.bmp");
+}
+
+void Screen::addObject(Object *object) {
+	objects.push_back(object);
 }
 
 //TODO: make generic or screen?
@@ -58,6 +64,11 @@ void Screen::drawBackground() {
 	for (int x = 0; x < surface->w; x += size.c[0])
 		for (int y = 0; y < surface->h; y += size.c[1])
 			background->draw(Point(x, y));
+}
+
+void Screen::draw() {
+	for (int i = 0; i < objects.size(); ++i)
+		objects[i]->draw();
 }
 
 void Screen::update() {

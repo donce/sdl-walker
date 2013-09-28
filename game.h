@@ -7,6 +7,7 @@
 #include "world.h"
 #include "screen.h"
 #include "path.h"
+#include "enemy.h"
 
 #define WORLD_FILE "data/world"
 
@@ -23,15 +24,16 @@ private:
 
 	bool running;
 
-	Screen screen;
-	Image agent, target;
+	Image agentImage, targetImage, enemyImage;
 	Uint8 mx, my;
 	bool buttonLeft;
+
+	std::vector<Enemy*> enemies;
 
 	Path path;
 
 	World world;
-	Object player;
+	Object *player;
 
 	void update(Uint32 ticks);
 };

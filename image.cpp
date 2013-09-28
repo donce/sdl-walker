@@ -1,7 +1,5 @@
 #include "image.h"
 
-Screen *Image::screen = NULL;
-
 bool Image::loadBMP(const char* file) {
 	const char *BASE = "data/";
 	char location[strlen(BASE) + strlen(file) + 1];
@@ -11,12 +9,8 @@ bool Image::loadBMP(const char* file) {
 	return surface != NULL;
 }
 
-void Image::setScreen(Screen *screen) {
-	Image::screen = screen;
-}
-
 void Image::draw(Point position) {
-	screen->draw(surface, position);
+	mainScreen.draw(surface, position);
 }
 
 Point Image::size() {

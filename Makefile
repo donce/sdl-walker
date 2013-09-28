@@ -1,6 +1,6 @@
 CPPFLAGS = -lSDL -I /usr/include/SDL/ -g
 
-OBJ_FILES = walker.o game.o world.o screen.o image.o object.o segment.o point.o
+OBJ_FILES = walker.o game.o world.o screen.o image.o object.o enemy.o segment.o point.o
 BINARY = walker
 
 $(BINARY): $(OBJ_FILES)

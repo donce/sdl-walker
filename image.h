@@ -10,9 +10,7 @@ class Screen;
 class Image {
 private:
 	SDL_Surface *surface;
-	static Screen *screen;
 public:
-	static void setScreen(Screen *screen);
 	bool loadBMP(const char *file);
 	void draw(Point position);
 	Point size();
