@@ -1,0 +1,24 @@
+#include "image.h"
+
+Screen *Image::screen = NULL;
+
+bool Image::loadBMP(const char* file) {
+	const char *BASE = "data/";
+	char location[strlen(BASE) + strlen(file) + 1];
+	strcpy(location, BASE);
+	strcat(location, file);
+	surface = SDL_LoadBMP(location);
+	return surface != NULL;
+}
+
+void Image::setScreen(Screen *screen) {
+	Image::screen = screen;
+}
+
+void Image::draw(Point position) {
+	screen->draw(surface, position);
+}
+
+Point Image::size() {
+	return Point(surface->w, surface->h);
+}

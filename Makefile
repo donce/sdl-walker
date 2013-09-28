@@ -1,9 +1,11 @@
 CPPFLAGS = -lSDL -I /usr/include/SDL/ -g
 
-walker: walker.o segment.o point.o
-	g++ -o walker walker.o point.o segment.o $(CPPFLAGS) 
+OBJ_FILES = walker.o game.o world.o screen.o image.o object.o segment.o point.o
+BINARY = walker
 
-run: walker
-	./walker
+$(BINARY): $(OBJ_FILES)
+	g++ -o $(BINARY) $(OBJ_FILES) $(CPPFLAGS) 
+run: $(BINARY)
+	./$(BINARY)
 clean:
-	rm -f *.o walker
+	rm -f *.o $(BINARY)
