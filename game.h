@@ -6,7 +6,6 @@
 #include "object.h"
 #include "world.h"
 #include "screen.h"
-#include "path.h"
 #include "enemy.h"
 
 #define WORLD_FILE "data/world"
@@ -23,7 +22,6 @@ private:
 	bool load();
 	void stop();
 
-	void changeTarget(Point position);
 	void draw();
 	void handleEvent(SDL_Event e);
 
@@ -35,7 +33,6 @@ private:
 
 	std::vector<Enemy*> enemies;
 
-	Path path;
 
 	World world;
 	Object *player;

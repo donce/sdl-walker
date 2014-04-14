@@ -2,7 +2,8 @@
 
 #include <fstream>
 
-const float SPEED = 600;
+const float PLAYER_SPEED = 600;
+const float ENEMY_SPEED = 200;
 
 Game::Game() {
 	buttonLeft = false;
@@ -20,7 +21,7 @@ void Game::init() {
 	targetImage.loadBMP("target.bmp");
 	enemyImage.loadBMP("enemy.bmp");
 
-	player = new Object(&agentImage);
+	player = new Object(&world, &agentImage, PLAYER_SPEED);
 	enemies.clear();
 }
 
@@ -28,7 +29,7 @@ void Game::startNewGame() {
 	player->setPosition(Point(50, 50));
 
 	for (int i = 100; i <= 300; i += 50) {
-		Enemy *enemy = new Enemy(&enemyImage);
+		Enemy *enemy = new Enemy(&world, &enemyImage, ENEMY_SPEED);
 		enemy->setPosition(Point(i, 50));
 		enemies.push_back(enemy);
 	}
@@ -58,7 +59,7 @@ bool Game::load() {
 	unsigned int number;
 	f.read((char*)&number, sizeof(number));
 	for (unsigned int i = 0; i < number; ++i) {
-		Enemy *enemy = new Enemy(&enemyImage);
+		Enemy *enemy = new Enemy(&world, &enemyImage, ENEMY_SPEED);
 		enemy->load(f);
 		enemies.push_back(enemy);
 	}
@@ -95,33 +96,25 @@ void Game::draw() {
 	std::vector<Segment> segments = world.getSegments();
 	for (int i = 0; i < segments.size(); ++i)
 		mainScreen.draw(segments[i]);
-	if (!path.empty())
-		targetImage.draw(path.back());
+
+	Path playerPath = player->getPath();
+	if (!playerPath.empty())
+		targetImage.draw(playerPath.back());
 	
 	mainScreen.draw();
 
 	mainScreen.update();
 }
 
-void Game::changeTarget(Point position) {
-	path = world.findPath(player->getPosition(), position);
-}
-
 void Game::update(Uint32 ticks) {
-	float left = SPEED * ticks / 1000;
-	Point pos = player->getPosition();
-	while (!path.empty() && left > 0) {
-		Point dir = path.front() - pos;
-		if (dir.length() > left) {
-			dir.normalize();
-			dir *= left;
-			left = 0;
+	player->update(ticks);
+	for (int i = 0; i < enemies.size(); ++i) {
+		Segment segment = Segment(player->getPosition(), enemies[i]->getPosition());
+		if (!world.intersect(segment)) {
+			enemies[i]->changeTarget(player->getPosition());
 		}
-		else {
-			path.pop_front();
-			left -= dir.length();
-		}
-		player->move(dir);
+
+		enemies[i]->update(ticks);
 	}
 }
 
@@ -134,7 +127,7 @@ void Game::handleEvent(SDL_Event e) {
 	if (e.type == SDL_MOUSEBUTTONUP) {
 		Uint8 nr = e.button.button;
 		if (nr == SDL_BUTTON_RIGHT)
-			changeTarget(Point(e.button.x, e.button.y));
+			player->changeTarget(Point(e.button.x, e.button.y));
 		else if (nr == SDL_BUTTON_LEFT)
 			buttonLeft = false;
 	}

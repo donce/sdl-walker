@@ -1,5 +1,5 @@
 #include "enemy.h"
 
-Enemy::Enemy(Image *image) : Object(image) {
+Enemy::Enemy(World *world, Image *image, float speed) : Object(world, image, speed) {
 
 }

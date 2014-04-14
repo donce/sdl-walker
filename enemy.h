@@ -5,7 +5,7 @@
 
 class Enemy : public Object {
 public:
-	Enemy(Image *image);
+	Enemy(World *world, Image *image, float speed);
 };
 
 #endif
